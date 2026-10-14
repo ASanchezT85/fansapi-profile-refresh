@@ -1,0 +1,15 @@
+Workload settings: {"handler":"legacy","busy_profiles":30,"calm_profiles":10,"busy_storm_seconds":8,"busy_quota_per_second":5,"calm_500_every_nth_request":6,"upstream_latency_ms":40,"horizon_workers":4,"max_attempts":5}
+Scheduled 40 refreshes at 15:09:15 UTC. Timeline (every 2s):
+t=  2s  acct-busy ok  0/30 (verified  0) waiting 28 oldest   2s | upstream 200:0 429:0 500:0  ||  acct-calm ok  0/10 (verified  0) waiting 10 oldest   2s | upstream 200:0 429:0 500:0  reserved 2
+t=  4s  acct-busy ok 21/30 (verified  0) waiting  7 oldest   4s | upstream 200:0 429:21 500:0  ||  acct-calm ok  0/10 (verified  0) waiting 10 oldest   4s | upstream 200:0 429:0 500:0  reserved 2
+t=  6s  acct-busy ok 30/30 (verified  0) waiting  0 oldest   0s | upstream 200:0 429:30 500:0  ||  acct-calm ok 10/10 (verified  0) waiting  0 oldest   0s | upstream 200:9 429:0 500:1  reserved 0
+
+Summary:
+| account   | profiles | reported ok | verified ok | corrupted | not refreshed | upstream requests    | requests / verified ok | oldest waiting job (max) | all verified at |
+|-----------|----------|-------------|-------------|-----------|---------------|----------------------|------------------------|--------------------------|-----------------|
+| acct-busy | 30       | 30          | 0           | 30        | 0             | 30 (429: 30, 500: 0) | n/a (0 verified)       | 4s                       | never           |
+| acct-calm | 10       | 10          | 0           | 10        | 0             | 10 (429: 0, 500: 1)  | n/a (0 verified)       | 4s                       | never           |
+Jobs left in queue: 0.
+Stored data sample (first profile of each account):
+  acct-busy/busy-creator-01 likes=0 revision=NULL expected_likes=n/a last_failure=-
+  acct-calm/calm-creator-01 likes=0 revision=11 expected_likes=105351 last_failure=-

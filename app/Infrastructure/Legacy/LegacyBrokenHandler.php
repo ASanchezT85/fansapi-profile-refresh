@@ -25,10 +25,11 @@ final class LegacyBrokenHandler implements RefreshesProfile
 {
     public function execute(RefreshCommand $command): RefreshOutcome
     {
-        /** @var object{id: int, handle: string} $profile */
+        /** @var object{id: int, account_id: string, handle: string} $profile */
         $profile = DB::table('profiles')->find($command->profileId);
 
         $response = Http::withToken(config()->string('services.upstream.token'))
+            ->withHeaders(['X-Account-Id' => $profile->account_id])
             ->get(config()->string('services.upstream.base_url').'/profiles/'.$profile->handle);
 
         /** @var array<string, mixed> $data */

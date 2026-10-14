@@ -41,6 +41,8 @@ return [
     'upstream' => [
         'base_url' => env('UPSTREAM_BASE_URL', 'http://web:8000/fake-upstream'),
         'token' => env('UPSTREAM_TOKEN', ''),
+        // Serves routes/fake_upstream.php (local workload only).
+        'fake_enabled' => (bool) env('FAKE_UPSTREAM_ENABLED', false),
     ],
 
 ];

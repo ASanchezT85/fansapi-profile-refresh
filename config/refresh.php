@@ -12,6 +12,15 @@ declare(strict_types=1);
  */
 return [
 
+    // Default handler when the runtime flag (cache key "refresh:handler") is not set: fixed|legacy.
+    // "legacy" exists only to reproduce the incident and measure the "before" numbers.
+    'handler' => env('REFRESH_HANDLER', 'fixed'),
+
+    // Local-only crash switch for `php artisan refresh:crash-demo` (kills the worker after the DB write).
+    'chaos' => [
+        'enabled' => (bool) env('REFRESH_CHAOS_ENABLED', false),
+    ],
+
     'upstream' => [
         'timeout_seconds' => (float) env('UPSTREAM_TIMEOUT_SECONDS', 5),
         'connect_timeout_seconds' => (float) env('UPSTREAM_CONNECT_TIMEOUT_SECONDS', 2),

@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+// Claims due profiles and queues one refresh each. Safe to overlap or run on several hosts
+// (claiming is atomic); withoutOverlapping just avoids pointless concurrent ticks.
+Schedule::command('refresh:schedule')->everyMinute()->withoutOverlapping();

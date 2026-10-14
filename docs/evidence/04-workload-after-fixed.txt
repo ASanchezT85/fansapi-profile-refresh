@@ -1,0 +1,29 @@
+Workload settings: {"handler":"fixed","busy_profiles":30,"calm_profiles":10,"busy_storm_seconds":8,"busy_quota_per_second":5,"calm_500_every_nth_request":6,"upstream_latency_ms":40,"horizon_workers":4,"max_attempts":5}
+Scheduled 40 refreshes at 15:09:30 UTC. Timeline (every 2s):
+t=  2s  acct-busy ok  0/30 (verified  0) waiting 29 oldest   3s | upstream 200:0 429:0 500:0  ||  acct-calm ok  0/10 (verified  0) waiting 10 oldest   3s | upstream 200:0 429:0 500:0  reserved 1
+t=  4s  acct-busy ok  0/30 (verified  0) waiting 30 oldest   5s | upstream 200:0 429:2 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t=  6s  acct-busy ok  0/30 (verified  0) waiting 30 oldest   7s | upstream 200:0 429:2 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t=  8s  acct-busy ok  0/30 (verified  0) waiting 30 oldest   9s | upstream 200:0 429:4 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t= 10s  acct-busy ok  0/30 (verified  0) waiting 30 oldest  11s | upstream 200:0 429:4 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t= 12s  acct-busy ok  0/30 (verified  0) waiting 30 oldest  13s | upstream 200:0 429:4 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t= 14s  acct-busy ok  9/30 (verified  9) waiting 21 oldest  15s | upstream 200:9 429:6 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t= 16s  acct-busy ok  9/30 (verified  9) waiting 21 oldest  17s | upstream 200:9 429:6 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t= 18s  acct-busy ok 17/30 (verified 17) waiting 13 oldest  19s | upstream 200:17 429:8 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t= 20s  acct-busy ok 17/30 (verified 17) waiting 13 oldest  21s | upstream 200:17 429:8 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t= 22s  acct-busy ok 17/30 (verified 17) waiting 13 oldest  23s | upstream 200:17 429:8 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t= 24s  acct-busy ok 17/30 (verified 17) waiting 13 oldest  25s | upstream 200:17 429:8 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t= 26s  acct-busy ok 17/30 (verified 17) waiting 13 oldest  27s | upstream 200:17 429:8 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t= 28s  acct-busy ok 26/30 (verified 26) waiting  4 oldest  29s | upstream 200:26 429:10 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t= 30s  acct-busy ok 26/30 (verified 26) waiting  4 oldest  31s | upstream 200:26 429:10 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t= 32s  acct-busy ok 28/30 (verified 28) waiting  2 oldest  33s | upstream 200:28 429:10 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+t= 34s  acct-busy ok 30/30 (verified 30) waiting  0 oldest   0s | upstream 200:30 429:10 500:0  ||  acct-calm ok 10/10 (verified 10) waiting  0 oldest   0s | upstream 200:10 429:0 500:1  reserved 0
+
+Summary:
+| account   | profiles | reported ok | verified ok | corrupted | not refreshed | upstream requests    | requests / verified ok | oldest waiting job (max) | all verified at |
+|-----------|----------|-------------|-------------|-----------|---------------|----------------------|------------------------|--------------------------|-----------------|
+| acct-busy | 30       | 30          | 30          | 0         | 0             | 40 (429: 10, 500: 0) | 1.33                   | 33s                      | 34s             |
+| acct-calm | 10       | 10          | 10          | 0         | 0             | 11 (429: 0, 500: 1)  | 1.10                   | 3s                       | 4s              |
+Jobs left in queue: 0.
+Stored data sample (first profile of each account):
+  acct-busy/busy-creator-01 likes=92440 revision=11 expected_likes=92440 last_failure=rate_limited
+  acct-calm/calm-creator-01 likes=105351 revision=11 expected_likes=105351 last_failure=-

@@ -6,6 +6,7 @@ namespace App\Infrastructure\Queue;
 
 use App\Application\Refresh\RefreshCommand;
 use App\Application\Refresh\RefreshesProfile;
+use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
@@ -18,6 +19,8 @@ use Illuminate\Queue\Middleware\WithoutOverlapping;
 final class RefreshProfileJob implements ShouldQueue
 {
     use Queueable;
+
+    public const string CRASH_AFTER_WRITE = 'chaos:crash-after-write';
 
     public int $tries;
 
@@ -52,7 +55,7 @@ final class RefreshProfileJob implements ShouldQueue
         ];
     }
 
-    public function handle(RefreshesProfile $refresher): void
+    public function handle(RefreshesProfile $refresher, Cache $cache): void
     {
         $refresher->execute(new RefreshCommand(
             $this->profileId,
@@ -61,5 +64,15 @@ final class RefreshProfileJob implements ShouldQueue
             $this->job?->attempts() ?? 1,
             $this->cycleStartedAt,
         ));
+
+        // Crash demo only (local, explicitly enabled, one shot): the worker process dies after the
+        // database write and before the queue acknowledges the job. Redis then redelivers it after
+        // retry_after. See `php artisan refresh:crash-demo`.
+        // The Redis cache store returns numbers as strings, hence the string comparison.
+        // forget() is the one-shot guard: only the process whose DEL removed the key crashes.
+        $crashFor = config()->boolean('refresh.chaos.enabled') ? $cache->get(self::CRASH_AFTER_WRITE) : null;
+        if (is_scalar($crashFor) && (string) $crashFor === (string) $this->profileId && $cache->forget(self::CRASH_AFTER_WRITE)) {
+            posix_kill((int) getmypid(), SIGKILL);
+        }
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Queue;
 
-use App\Application\Refresh\RefreshesProfile;
 use App\Infrastructure\Queue\RefreshProfileJob;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -29,11 +28,11 @@ final class RefreshProfileJobTest extends TestCase
         $job = new RefreshProfileJob($id);
 
         CarbonImmutable::setTestNow('2026-10-14 12:00:00');
-        $job->handle($this->app->make(RefreshesProfile::class));
+        $this->app->call([$job, 'handle']);
         $afterFirst = (array) DB::table('profiles')->find($id);
 
         CarbonImmutable::setTestNow('2026-10-14 12:00:30');
-        $job->handle($this->app->make(RefreshesProfile::class));
+        $this->app->call([$job, 'handle']);
         $afterReplay = (array) DB::table('profiles')->find($id);
 
         $this->assertNotSame([], $afterFirst);

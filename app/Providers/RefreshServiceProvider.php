@@ -17,6 +17,7 @@ use App\Infrastructure\Clock\SystemClock;
 use App\Infrastructure\Http\HttpProfileUpstream;
 use App\Infrastructure\Persistence\DatabaseProfileRepository;
 use App\Infrastructure\Queue\LaravelRefreshQueue;
+use App\Infrastructure\Queue\RefreshHandlerSelector;
 use App\Infrastructure\Redis\RedisAccountCooldown;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Client\Factory as HttpFactory;
@@ -36,7 +37,9 @@ final class RefreshServiceProvider extends ServiceProvider
         $this->app->singleton(ClockInterface::class, SystemClock::class);
         $this->app->bind(ProfileRepository::class, DatabaseProfileRepository::class);
         $this->app->bind(RefreshQueue::class, LaravelRefreshQueue::class);
-        $this->app->bind(RefreshesProfile::class, RefreshProfile::class);
+        // Jobs go through the runtime flag (legacy|fixed); see RefreshHandlerSelector.
+        $this->app->bind(RefreshesProfile::class, RefreshHandlerSelector::class);
+        $this->app->when(RefreshHandlerSelector::class)->needs('$default')->giveConfig('refresh.handler');
 
         $this->app->bind(ProfileUpstream::class, fn (Application $app): ProfileUpstream => new HttpProfileUpstream(
             $app->make(HttpFactory::class),
