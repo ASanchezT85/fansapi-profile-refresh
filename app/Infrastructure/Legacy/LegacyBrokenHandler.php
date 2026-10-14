@@ -28,8 +28,8 @@ final class LegacyBrokenHandler implements RefreshesProfile
         /** @var object{id: int, handle: string} $profile */
         $profile = DB::table('profiles')->find($command->profileId);
 
-        $response = Http::withToken((string) config('services.upstream.token'))
-            ->get(config('services.upstream.base_url').'/profiles/'.$profile->handle);
+        $response = Http::withToken(config()->string('services.upstream.token'))
+            ->get(config()->string('services.upstream.base_url').'/profiles/'.$profile->handle);
 
         /** @var array<string, mixed> $data */
         $data = $response->json() ?? [];
@@ -37,7 +37,7 @@ final class LegacyBrokenHandler implements RefreshesProfile
         DB::table('profiles')->where('id', $profile->id)->update([
             'likes' => $data['likes'] ?? 0,
             'revision' => $data['revision'] ?? null,
-            'refreshed_at' => now(),
+            'last_successful_refresh_at' => now(),
             'updated_at' => now(),
         ]);
 

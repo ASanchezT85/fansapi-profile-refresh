@@ -1,0 +1,118 @@
+PHPUnit 12.5.39 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.26
+Configuration: /app/phpunit.xml
+
+................................................................. 65 / 85 ( 76%)
+....................                                              85 / 85 (100%)
+
+Time: 00:03.716, Memory: 20.00 MB
+
+Architecture (Tests\Unit\Architecture)
+ ✔ Layer only depends on allowed namespaces with data set "Domain"
+ ✔ Layer only depends on allowed namespaces with data set "Application"
+
+Database Profile Repository (Tests\Feature\Infrastructure\DatabaseProfileRepository)
+ ✔ Tracking the same profile twice creates one row
+ ✔ The unique index refuses a duplicate insert that bypasses the repository
+ ✔ The database refuses negative likes even without the domain
+ ✔ Claiming marks due profiles pending so they are not scheduled twice
+ ✔ Scheduler runs twice but queues each due profile once
+
+Http Profile Upstream (Tests\Feature\Infrastructure\HttpProfileUpstream)
+ ✔ Requests the profile with token and account headers
+ ✔ Classifies http failures with data set "429 without Retry-After"
+ ✔ Classifies http failures with data set "429 with Retry-After seconds"
+ ✔ Classifies http failures with data set #500
+ ✔ Classifies http failures with data set #503
+ ✔ Classifies http failures with data set #404
+ ✔ Classifies http failures with data set #410
+ ✔ Classifies http failures with data set #401
+ ✔ Classifies http failures with data set #403
+ ✔ Parses retry after given as an http date
+ ✔ A timeout is classified as timeout
+ ✔ A refused connection is not a timeout
+ ✔ Rejects bodies that are not a json object
+ ✔ Rejects bodies above the size limit
+
+Legacy Broken Handler (Tests\Feature\Refresh\LegacyBrokenHandler)
+ ✔ Old format is stored correctly
+ ✔ New format erases likes to zero and reports success
+ ✔ Rate limit without retry after erases profile and reports success
+ ✔ Server error with empty body erases profile and reports success
+
+Profile Snapshot (Tests\Unit\Domain\ProfileSnapshot)
+ ✔ Old format reads top level likes
+ ✔ New format reads likes inside profile and keeps other fields
+ ✔ Profile object is authoritative over a stale top level likes
+ ✔ Explicit zero and digit strings are valid
+ ✔ Invalid payloads are rejected with data set "likes missing (old format)"
+ ✔ Invalid payloads are rejected with data set "likes missing (new format)"
+ ✔ Invalid payloads are rejected with data set "likes null"
+ ✔ Invalid payloads are rejected with data set "likes negative"
+ ✔ Invalid payloads are rejected with data set "likes negative string"
+ ✔ Invalid payloads are rejected with data set "likes word"
+ ✔ Invalid payloads are rejected with data set "likes empty string"
+ ✔ Invalid payloads are rejected with data set "likes fractional"
+ ✔ Invalid payloads are rejected with data set "likes boolean"
+ ✔ Invalid payloads are rejected with data set "revision missing"
+ ✔ Invalid payloads are rejected with data set "revision negative"
+ ✔ Invalid payloads are rejected with data set "profile is a list"
+ ✔ Invalid payloads are rejected with data set "profile is a scalar"
+
+Redis Account Cooldown (Tests\Feature\Infrastructure\RedisAccountCooldown)
+ ✔ No cooldown by default
+ ✔ Cooldown is per account and never shortened
+ ✔ Cooldown ends when the key expires
+
+Refresh Profile (Tests\Feature\Refresh\RefreshProfile)
+ ✔ Success records success attempt and next refresh separately
+ ✔ Failure keeps last success and records failure details
+ ✔ Rate limit cools down the account and defers its other profiles without calling upstream
+ ✔ A cooling down account does not block other accounts
+ ✔ The account recovers once the cooldown expires
+ ✔ Transient failures end the cycle after the attempt limit
+ ✔ Permanent failures are not retried
+ ✔ Logs follow account profile job and attempt without leaking the token
+
+Refresh Profile Job (Tests\Feature\Queue\RefreshProfileJob)
+ ✔ Replaying a job after its database write changes nothing
+ ✔ The payload carries ids only
+ ✔ Timeouts are ordered so redelivery cannot overlap a running attempt
+
+Refresh Regression (Tests\Feature\Refresh\RefreshRegression)
+ ✔ Changed format with likes inside profile is stored
+ ✔ Old format with top level likes is still accepted
+ ✔ Rate limit without retry after keeps last valid profile
+ ✔ Server error with empty body keeps last valid profile
+ ✔ Timeout keeps last valid profile
+ ✔ Invalid payload is rejected and keeps last valid profile with data set "likes missing"
+ ✔ Invalid payload is rejected and keeps last valid profile with data set "likes negative"
+ ✔ Invalid payload is rejected and keeps last valid profile with data set "likes non-numeric string"
+ ✔ Invalid payload is rejected and keeps last valid profile with data set "likes fractional"
+ ✔ Invalid payload is rejected and keeps last valid profile with data set "likes null"
+ ✔ Invalid payload is rejected and keeps last valid profile with data set "revision missing"
+ ✔ Invalid payload is rejected and keeps last valid profile with data set "body is not JSON"
+ ✔ Explicit zero likes is valid
+ ✔ Older revision arriving last does not overwrite newer data
+ ✔ Duplicate execution applies once and creates no duplicate profile
+
+Refresh Schedule (Tests\Unit\Domain\RefreshSchedule)
+ ✔ Refresh interval depends on likes with data set "zero likes"
+ ✔ Refresh interval depends on likes with data set "just below the threshold"
+ ✔ Refresh interval depends on likes with data set "exactly 100,000 belongs to the 72 h group"
+ ✔ Refresh interval depends on likes with data set "just above the threshold"
+ ✔ Refresh interval depends on likes with data set "statement profile (121,000)"
+
+Retry Policy (Tests\Unit\Application\RetryPolicy)
+ ✔ Permanent failures are never retried with data set "invalid payload"
+ ✔ Permanent failures are never retried with data set "not found"
+ ✔ Permanent failures are never retried with data set "rejected"
+ ✔ Transient failures stop at the attempt limit
+ ✔ Rate limit without retry after waits a random delay that grows per attempt
+ ✔ Rate limit with retry after honours it but caps it
+ ✔ Server errors and timeouts back off exponentially with jitter
+ ✔ Giving up schedules the next cycle later depending on the reason
+ ✔ Same seed gives the same decisions
+
+OK (85 tests, 293 assertions)

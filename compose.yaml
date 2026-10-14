@@ -3,7 +3,6 @@ name: fansapi-refresh
 x-php: &php
   build: docker/php
   image: fansapi-refresh-php
-  env_file: .env
   volumes:
     - .:/app
     # vendor lives in a named volume: a Windows/macOS bind mount makes autoloading very slow.

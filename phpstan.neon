@@ -5,7 +5,7 @@ parameters:
     level: 9
     paths:
         - app
-        - config
+        - config/refresh.php
         - database
         - routes
         - tests

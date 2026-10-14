@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -38,7 +40,7 @@ return [
     // Upstream profile provider. The token is a secret: never log it.
     'upstream' => [
         'base_url' => env('UPSTREAM_BASE_URL', 'http://web:8000/fake-upstream'),
-        'token' => env('UPSTREAM_TOKEN'),
+        'token' => env('UPSTREAM_TOKEN', ''),
     ],
 
 ];
