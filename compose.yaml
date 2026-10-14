@@ -1,0 +1,64 @@
+name: fansapi-refresh
+
+x-php: &php
+  build: docker/php
+  image: fansapi-refresh-php
+  env_file: .env
+  volumes:
+    - .:/app
+    # vendor lives in a named volume: a Windows/macOS bind mount makes autoloading very slow.
+    - vendor:/app/vendor
+  depends_on:
+    pgsql:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  # One-off tooling: docker compose run --rm app composer install / php artisan test / ...
+  app:
+    <<: *php
+    profiles: [tools]
+
+  horizon:
+    <<: *php
+    command: php artisan horizon
+    stop_signal: SIGTERM
+
+  scheduler:
+    <<: *php
+    command: php artisan schedule:work
+
+  # Serves the minimal UI and the local fake upstream used by the workload.
+  web:
+    <<: *php
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    environment:
+      PHP_CLI_SERVER_WORKERS: 8
+    ports:
+      - "8000:8000"
+
+  pgsql:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: fansapi
+      POSTGRES_USER: fansapi
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - pgsql:/var/lib/postgresql/data
+      - ./docker/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "fansapi", "-d", "fansapi"]
+      interval: 2s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      retries: 30
+
+volumes:
+  vendor:
+  pgsql:
