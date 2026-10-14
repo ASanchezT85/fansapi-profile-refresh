@@ -13,7 +13,7 @@
 - Every claim in the README comes from a command that was actually run; raw outputs are in `docs/evidence/`.
 - The regression suite was run red against the legacy handler (13 failed, 6 passed) and committed before
   any fix; after the fix the same file, unchanged (`git diff` checked), passes.
-- Full suite: 96 tests, 316 assertions, against real Postgres and real Redis containers.
+- Full suite: 97 tests, 318 assertions, against real Postgres and real Redis containers.
 - PHPStan (Larastan) level 9 with no errors and no baseline; Pint clean.
 - The before/after workload ran against live Horizon workers, Redis and Postgres; every stored row was
   checked against the value the fake upstream served.

@@ -70,7 +70,7 @@ docker compose build
 docker compose run --rm app composer install
 docker compose run --rm app php artisan key:generate
 docker compose run --rm app php artisan migrate
-docker compose run --rm app php artisan test          # 96 tests, uses the separate fansapi_testing DB
+docker compose run --rm app php artisan test          # 97 tests, uses the separate fansapi_testing DB
 docker compose up -d horizon web                       # 4 Horizon workers + UI/fake upstream on :8000
 docker compose exec horizon php artisan refresh:workload --handler=legacy   # "before"
 docker compose exec horizon php artisan refresh:workload --handler=fixed    # "after"
