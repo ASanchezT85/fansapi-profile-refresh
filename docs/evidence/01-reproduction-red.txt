@@ -1,0 +1,236 @@
+
+  ....⨯.⨯⨯⨯⨯⨯⨯⨯⨯⨯⨯.⨯⨯
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Refresh\RefreshRegressionTest > changed format with…   
+  Failed asserting that two arrays are identical.
+   Array &0 [
+  -    'likes' => 121000,
+  +    'likes' => 0,
+       'revision' => 11,
+   ]
+  
+
+  at tests/Feature/Refresh/RefreshRegressionTest.php:33
+     29▕ 
+     30▕         $outcome = $this->refresh($id);
+     31▕ 
+     32▕         $this->assertTrue($outcome->isSuccessfulRefresh());
+  ➜  33▕         $this->assertSame(['likes' => 121_000, 'revision' => 11], $this->storedProfile($id));
+     34▕     }
+     35▕ 
+     36▕     public function test_old_format_with_top_level_likes_is_still_accepted(): void
+     37▕     {
+
+  1   tests/Feature/Refresh/RefreshRegressionTest.php:33
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Refresh\RefreshRegressionTest > rate limit without…    
+  Failed asserting that true is false.
+
+  at tests/Feature/Refresh/RefreshRegressionTest.php:54
+     50▕         $this->upstreamResponds(429, $this->fixture('rate-limited.json'));
+     51▕ 
+     52▕         $outcome = $this->refresh($id);
+     53▕ 
+  ➜  54▕         $this->assertFalse($outcome->isSuccessfulRefresh());
+     55▕         $this->assertSame(['likes' => 120_000, 'revision' => 10], $this->storedProfile($id));
+     56▕     }
+     57▕ 
+     58▕     public function test_server_error_with_empty_body_keeps_last_valid_profile(): void
+
+  1   tests/Feature/Refresh/RefreshRegressionTest.php:54
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Refresh\RefreshRegressionTest > server error with e…   
+  Failed asserting that true is false.
+
+  at tests/Feature/Refresh/RefreshRegressionTest.php:65
+     61▕         $this->upstreamResponds(500, '');
+     62▕ 
+     63▕         $outcome = $this->refresh($id);
+     64▕ 
+  ➜  65▕         $this->assertFalse($outcome->isSuccessfulRefresh());
+     66▕         $this->assertSame(['likes' => 120_000, 'revision' => 10], $this->storedProfile($id));
+     67▕     }
+     68▕ 
+     69▕     public function test_timeout_keeps_last_valid_profile(): void
+
+  1   tests/Feature/Refresh/RefreshRegressionTest.php:65
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Refresh\RefreshRegressionTest…   ConnectionException   
+  cURL error 28: Operation timed out after 5001 milliseconds with 0 bytes received
+
+  at vendor/laravel/framework/src/Illuminate/Http/Client/PendingRequest.php:2136
+    2132▕      * @throws \Illuminate\Http\Client\ConnectionException
+    2133▕      */
+    2134▕     protected function marshalTransportException(TransferException $e)
+    2135▕     {
+  ➜ 2136▕         $exception = new ConnectionException($e->getMessage(), 0, $e);
+    2137▕ 
+    2138▕         $request = (new Request($e->getRequest()))->setRequestAttributes($this->attributes);
+    2139▕ 
+    2140▕         $this->factory?->recordRequestResponsePair(
+
+      +28 vendor frames 
+  29  app/Infrastructure/Legacy/LegacyBrokenHandler.php:32
+  30  tests/Feature/Refresh/RefreshRegressionTest.php:147
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Refresh\RefreshRegressionTest > invalid payload is…    
+  Failed asserting that true is false.
+
+  at tests/Feature/Refresh/RefreshRegressionTest.php:102
+     98▕         $this->upstreamResponds(200, $this->fixture($fixture));
+     99▕ 
+    100▕         $outcome = $this->refresh($id);
+    101▕ 
+  ➜ 102▕         $this->assertFalse($outcome->isSuccessfulRefresh());
+    103▕         $this->assertSame(['likes' => 120_000, 'revision' => 10], $this->storedProfile($id));
+    104▕     }
+    105▕ 
+    106▕     public function test_explicit_zero_likes_is_valid(): void
+
+  1   tests/Feature/Refresh/RefreshRegressionTest.php:102
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Refresh\RefreshRegressionTest > invalid payload is…    
+  Failed asserting that true is false.
+
+  at tests/Feature/Refresh/RefreshRegressionTest.php:102
+     98▕         $this->upstreamResponds(200, $this->fixture($fixture));
+     99▕ 
+    100▕         $outcome = $this->refresh($id);
+    101▕ 
+  ➜ 102▕         $this->assertFalse($outcome->isSuccessfulRefresh());
+    103▕         $this->assertSame(['likes' => 120_000, 'revision' => 10], $this->storedProfile($id));
+    104▕     }
+    105▕ 
+    106▕     public function test_explicit_zero_likes_is_valid(): void
+
+  1   tests/Feature/Refresh/RefreshRegressionTest.php:102
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Refresh\RefreshRegressionTest > invalid payload is…    
+  Failed asserting that true is false.
+
+  at tests/Feature/Refresh/RefreshRegressionTest.php:102
+     98▕         $this->upstreamResponds(200, $this->fixture($fixture));
+     99▕ 
+    100▕         $outcome = $this->refresh($id);
+    101▕ 
+  ➜ 102▕         $this->assertFalse($outcome->isSuccessfulRefresh());
+    103▕         $this->assertSame(['likes' => 120_000, 'revision' => 10], $this->storedProfile($id));
+    104▕     }
+    105▕ 
+    106▕     public function test_explicit_zero_likes_is_valid(): void
+
+  1   tests/Feature/Refresh/RefreshRegressionTest.php:102
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Refresh\RefreshRegressionTest > invalid payload is…    
+  Failed asserting that true is false.
+
+  at tests/Feature/Refresh/RefreshRegressionTest.php:102
+     98▕         $this->upstreamResponds(200, $this->fixture($fixture));
+     99▕ 
+    100▕         $outcome = $this->refresh($id);
+    101▕ 
+  ➜ 102▕         $this->assertFalse($outcome->isSuccessfulRefresh());
+    103▕         $this->assertSame(['likes' => 120_000, 'revision' => 10], $this->storedProfile($id));
+    104▕     }
+    105▕ 
+    106▕     public function test_explicit_zero_likes_is_valid(): void
+
+  1   tests/Feature/Refresh/RefreshRegressionTest.php:102
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Refresh\RefreshRegressionTest > invalid payload is…    
+  Failed asserting that true is false.
+
+  at tests/Feature/Refresh/RefreshRegressionTest.php:102
+     98▕         $this->upstreamResponds(200, $this->fixture($fixture));
+     99▕ 
+    100▕         $outcome = $this->refresh($id);
+    101▕ 
+  ➜ 102▕         $this->assertFalse($outcome->isSuccessfulRefresh());
+    103▕         $this->assertSame(['likes' => 120_000, 'revision' => 10], $this->storedProfile($id));
+    104▕     }
+    105▕ 
+    106▕     public function test_explicit_zero_likes_is_valid(): void
+
+  1   tests/Feature/Refresh/RefreshRegressionTest.php:102
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Refresh\RefreshRegressionTest > invalid payload is…    
+  Failed asserting that true is false.
+
+  at tests/Feature/Refresh/RefreshRegressionTest.php:102
+     98▕         $this->upstreamResponds(200, $this->fixture($fixture));
+     99▕ 
+    100▕         $outcome = $this->refresh($id);
+    101▕ 
+  ➜ 102▕         $this->assertFalse($outcome->isSuccessfulRefresh());
+    103▕         $this->assertSame(['likes' => 120_000, 'revision' => 10], $this->storedProfile($id));
+    104▕     }
+    105▕ 
+    106▕     public function test_explicit_zero_likes_is_valid(): void
+
+  1   tests/Feature/Refresh/RefreshRegressionTest.php:102
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Refresh\RefreshRegressionTest > invalid payload is…    
+  Failed asserting that true is false.
+
+  at tests/Feature/Refresh/RefreshRegressionTest.php:102
+     98▕         $this->upstreamResponds(200, $this->fixture($fixture));
+     99▕ 
+    100▕         $outcome = $this->refresh($id);
+    101▕ 
+  ➜ 102▕         $this->assertFalse($outcome->isSuccessfulRefresh());
+    103▕         $this->assertSame(['likes' => 120_000, 'revision' => 10], $this->storedProfile($id));
+    104▕     }
+    105▕ 
+    106▕     public function test_explicit_zero_likes_is_valid(): void
+
+  1   tests/Feature/Refresh/RefreshRegressionTest.php:102
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Refresh\RefreshRegressionTest > older revision arri…   
+  Failed asserting that true is false.
+
+  at tests/Feature/Refresh/RefreshRegressionTest.php:127
+    123▕         $first = $this->refresh($id);
+    124▕         $late = $this->refresh($id);
+    125▕ 
+    126▕         $this->assertTrue($first->isSuccessfulRefresh());
+  ➜ 127▕         $this->assertFalse($late->isSuccessfulRefresh());
+    128▕         $this->assertSame(['likes' => 121_000, 'revision' => 11], $this->storedProfile($id));
+    129▕     }
+    130▕ 
+    131▕     public function test_duplicate_execution_applies_once_and_creates_no_duplicate_profile(): void
+
+  1   tests/Feature/Refresh/RefreshRegressionTest.php:127
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\Refresh\RefreshRegressionTest > duplicate execution…   
+  A replay of an applied revision is not a second refresh.
+Failed asserting that true is false.
+
+  at tests/Feature/Refresh/RefreshRegressionTest.php:140
+    136▕         $first = $this->refresh($id);
+    137▕         $duplicate = $this->refresh($id);
+    138▕ 
+    139▕         $this->assertTrue($first->isSuccessfulRefresh());
+  ➜ 140▕         $this->assertFalse($duplicate->isSuccessfulRefresh(), 'A replay of an applied revision is not a second refresh.');
+    141▕         $this->assertSame(1, DB::table('profiles')->where('handle', self::HANDLE)->count());
+    142▕         $this->assertSame(['likes' => 121_000, 'revision' => 11], $this->storedProfile($id));
+    143▕     }
+    144▕
+
+  1   tests/Feature/Refresh/RefreshRegressionTest.php:140
+
+
+  Tests:    13 failed, 6 passed (27 assertions)
+  Duration: 1.94s
+
