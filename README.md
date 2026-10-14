@@ -51,6 +51,13 @@ and [`FansApiProfileUpstreamTest`](tests/Feature/Infrastructure/FansApiProfileUp
 every recorded response maps to a valid snapshot. Offline, the same test runs against
 `fansapi-docs-example.json`: the shape of the documented example with illustrative values, not real data.
 
+Result of one live run ([`07-live-provider-run.txt`](docs/evidence/07-live-provider-run.txt)): `refreshed`,
+likes 608,630, next refresh in 24 h; the response is recorded as
+[`fansapi-live-madison420ivy.json`](tests/Fixtures/upstream/fansapi-live-madison420ivy.json) and covered by the
+test. It also exposed the limit of a time-based revision: the provider answered from its cache
+(`cached_at` ~10 h earlier) and that data still got a current revision. Next step: request with
+`?fresh=true`, or use `cached_at` as the revision.
+
 ---
 
 ## 1. Run it

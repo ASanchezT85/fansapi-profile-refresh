@@ -57,7 +57,11 @@
   The AI session did not make a live call: its permission system blocked sending the API key to an external
   service, and I did not work around that. Whether `favoritedCount` is the right "likes" counter, and the
   provider's real 429/Retry-After behaviour, are confirmed only by a live run with `--record`.
-  Live run by Alexander: _pending / result: …_
+  Live run by Alexander (2026-10-14, `docs/evidence/07-live-provider-run.txt`): `refreshed`, likes 608,630
+  from `favoritedCount`, response recorded as `tests/Fixtures/upstream/fansapi-live-madison420ivy.json`
+  (credit balance stripped; key not present). It also showed the provider served a cached response
+  (~10 h old) that received a current time-based revision: the weakness noted in the adapter, now observed.
+  Only one live call was made, so the provider's real 429/Retry-After behaviour is still not observed.
 - **Scale.** 4 workers, 40 profiles, one Docker host. Nothing here measures 50 M jobs/day; the scaling
   section is reasoning plus a list of what to measure.
 - **Crash variants**: a kill in the middle of the SQL statement, Redis restart/failover (losing reserved

@@ -1,0 +1,23 @@
+# One real refresh through the fixed pipeline against the OnlyFans API by FansAPI (run by Alexander, 2026-10-14)
+$ docker compose exec horizon php artisan refresh:live madison420ivy --record
+Outcome: refreshed
+Stored: {
+    "account_id": "fansapi-live",
+    "handle": "madison420ivy",
+    "likes": 608630,
+    "revision": 1791993235305634,
+    "last_successful_refresh_at": "2026-10-14 15:53:56+00",
+    "last_attempt_at": "2026-10-14 15:53:56+00",
+    "last_failure_reason": null,
+    "last_failure_detail": null,
+    "next_refresh_at": "2026-10-15 15:53:56+00"
+}
+Recorded tests/Fixtures/upstream/fansapi-live-madison420ivy.json
+
+# Observations from the recorded response
+- likes = data.favoritedCount = 608,630 (> 100,000, so next refresh in 24 h, as stored).
+- _meta._cache.is_cached = true, cached_at 2026-10-14T06:11:05Z: the data was ~10 h old, but the adapter
+  gave it revision = request time (15:53). This is the known weakness of a time-based revision; using
+  ?fresh=true (or cached_at as the revision) would close it. Not changed in this submission.
+- _meta._rate_limits: limit_minute 60, no daily limit. That is the per-key budget that would drive the
+  per-account admission control described in README section 6.
