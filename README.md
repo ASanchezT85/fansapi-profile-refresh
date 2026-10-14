@@ -6,6 +6,9 @@ A small service that refreshes creator profiles from an upstream provider throug
 It reproduces the production incident from the statement (format change + 429/500 being stored as
 "successful" refreshes), fixes it, and measures the same workload before and after.
 
+**Run it:** [section 1](#1-run-it) (Docker only). **Results:** [section 4](#4-evidence-same-workload-before-and-after).
+**AI usage:** [AI.md](AI.md).
+
 No real OnlyFans endpoint is called anywhere. Tests use local fixtures (`tests/Fixtures/upstream`) and
 HTTP fakes; the workload uses a local fake upstream served by the `web` container.
 
@@ -62,20 +65,44 @@ test. It also exposed the limit of a time-based revision: the provider answered 
 
 ## 1. Run it
 
-Requirements: Docker (with Compose). Nothing else on the host.
+Requirements: Docker with Compose v2 and free port 8000. No PHP, Composer, Postgres or Redis needed on the
+host (PHP 8.4 with pcntl and phpredis, Postgres 17 and Redis 7 run in containers). First build ~3-5 min.
+
+**Set up and run the tests**
 
 ```bash
+git clone https://github.com/ASanchezT85/fansapi-profile-refresh.git
+cd fansapi-profile-refresh
 cp .env.example .env
 docker compose build
 docker compose run --rm app composer install
 docker compose run --rm app php artisan key:generate
 docker compose run --rm app php artisan migrate
-docker compose run --rm app php artisan test          # 97 tests, uses the separate fansapi_testing DB
-docker compose up -d horizon web                       # 4 Horizon workers + UI/fake upstream on :8000
-docker compose exec horizon php artisan refresh:workload --handler=legacy   # "before"
-docker compose exec horizon php artisan refresh:workload --handler=fixed    # "after"
-docker compose exec horizon php artisan refresh:crash-demo                  # ~95 s, kills a worker
+docker compose run --rm app php artisan test     # expect: 97 passed (uses the separate fansapi_testing DB)
 ```
+
+**Reproduce the incident and the fix** (same workload, against real Horizon workers)
+
+```bash
+docker compose up -d horizon web                                             # 4 workers + UI + local fake upstream
+docker compose exec horizon php artisan refresh:workload --handler=legacy    # before: 40 reported ok, 0 verified, 40 corrupted
+docker compose exec horizon php artisan refresh:workload --handler=fixed     # after: 40 verified, calm account done in ~4 s
+docker compose exec horizon php artisan refresh:crash-demo                   # ~95 s: kill after DB write, Redis redelivers
+```
+
+Each workload takes under a minute and prints a timeline plus a summary table (section 4 explains the
+columns). Exact numbers vary slightly between runs because retry delays are randomized.
+
+**Optional: one refresh against the real provider** needs your own OnlyFans API key in `.env`
+(`FANSAPI_KEY=...`), then `docker compose exec horizon php artisan refresh:live madison420ivy`. See
+"Try it with live data" above.
+
+**Look around and clean up**
+
+- UI (profiles + Scout search): http://localhost:8000 · Horizon dashboard: http://localhost:8000/horizon
+- Structured logs: `storage/logs/refresh.log`
+- Quality gates (Pint, PHPStan level 9, tests): `docker compose run --rm app composer check`
+- Stop everything and delete the data: `docker compose down -v`
 
 UI: http://localhost:8000 (profiles + Scout search). Horizon dashboard: http://localhost:8000/horizon.
 Quality gates: `docker compose run --rm app composer check` (Pint, PHPStan level 9, tests).
