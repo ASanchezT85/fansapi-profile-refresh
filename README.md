@@ -9,6 +9,26 @@ It reproduces the production incident from the statement (format change + 429/50
 No real OnlyFans endpoint is called anywhere. Tests use local fixtures (`tests/Fixtures/upstream`) and
 HTTP fakes; the workload uses a local fake upstream served by the `web` container.
 
+### Why fixtures instead of onlyfans.com/madison420ivy
+
+- **The incident has to be reproducible on demand.** The failure cases (429 without Retry-After, 500 with an
+  empty body, the format switch, a late response with an older `revision`) cannot be triggered against a
+  live service when you need them, and a regression test that depends on someone else's uptime is not a
+  regression test. The statement asks for "local response fixtures" for exactly this reason.
+- **The incident's payload is a model, not OnlyFans' real format.** `likes`, `revision` and
+  `profile.likes` come from the statement; the fix is written against that contract.
+- **onlyfans.com has no public API.** Its internal endpoints need a logged-in session and signed request
+  headers, and scraping it breaks its terms. That is the problem providers like FansAPI exist to solve, so
+  I did not try to work around it.
+- **The real source plugs into the existing port.** `ProfileUpstream` is the only thing the application
+  knows about the provider. Going live means adding one adapter (e.g. one that calls FansAPI's "Get
+  Profile Details" endpoint for a username), mapping its response into the payload `ProfileSnapshot`
+  validates, putting the API key in the environment, and recording one real response as a new fixture.
+  Retry, cooldown, revision and validation logic do not change. Things I would check against the real
+  provider first: its actual 429/Retry-After behaviour and rate-limit scope, whether it exposes a version
+  I can use as `revision` (if not, a fetched-at timestamp is the fallback, with weaker ordering
+  guarantees), and that 401/403 pause the account instead of being retried.
+
 ---
 
 ## 1. Run it
