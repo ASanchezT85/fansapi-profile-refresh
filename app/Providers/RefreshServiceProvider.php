@@ -14,6 +14,7 @@ use App\Application\Refresh\RetryPolicy;
 use App\Application\Refresh\RetrySettings;
 use App\Application\Refresh\ScheduleDueRefreshes;
 use App\Infrastructure\Clock\SystemClock;
+use App\Infrastructure\Http\FansApiProfileUpstream;
 use App\Infrastructure\Http\HttpProfileUpstream;
 use App\Infrastructure\Persistence\DatabaseProfileRepository;
 use App\Infrastructure\Queue\LaravelRefreshQueue;
@@ -48,6 +49,19 @@ final class RefreshServiceProvider extends ServiceProvider
             config()->float('refresh.upstream.timeout_seconds'),
             config()->float('refresh.upstream.connect_timeout_seconds'),
             config()->integer('refresh.upstream.max_body_bytes'),
+        ));
+
+        // Real provider adapter; bound to the port only inside `refresh:live`.
+        $this->app->bind(FansApiProfileUpstream::class, fn (Application $app): FansApiProfileUpstream => new FansApiProfileUpstream(
+            new HttpProfileUpstream(
+                $app->make(HttpFactory::class),
+                config()->string('services.fansapi.base_url'),
+                config()->string('services.fansapi.key'),
+                config()->float('refresh.upstream.timeout_seconds'),
+                config()->float('refresh.upstream.connect_timeout_seconds'),
+                config()->integer('refresh.upstream.max_body_bytes'),
+            ),
+            $app->make(ClockInterface::class),
         ));
 
         $this->app->bind(AccountCooldown::class, fn (Application $app): AccountCooldown => new RedisAccountCooldown(

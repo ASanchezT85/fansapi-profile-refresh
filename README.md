@@ -29,6 +29,28 @@ HTTP fakes; the workload uses a local fake upstream served by the `web` containe
   I can use as `revision` (if not, a fetched-at timestamp is the fallback, with weaker ordering
   guarantees), and that 401/403 pause the account instead of being retried.
 
+### Try it with live data (bring your own key)
+
+That adapter exists: [`FansApiProfileUpstream`](app/Infrastructure/Http/FansApiProfileUpstream.php) calls the
+OnlyFans API by FansAPI (`GET /api/profiles/{username}`) and maps it into the same payload the domain
+validates: `likes` ← `data.favoritedCount`; `revision` ← request start time in microseconds, because the
+provider exposes no version (a response to an older request can never overwrite a newer one; weaker than a
+real version, see the class docblock). Transport classification (429/Retry-After, 5xx, timeouts) is reused.
+
+```bash
+# in .env (never committed, not in the zip): FANSAPI_KEY=<your OnlyFans API key, read-only is enough>
+docker compose exec horizon php artisan refresh:live madison420ivy            # 1 credit
+docker compose exec horizon php artisan refresh:live madison420ivy --record   # also saves the response as a fixture
+```
+
+It runs one refresh through the fixed pipeline (validation, revision-guarded write, failure classification,
+structured logs) in that process only: nothing is queued, and the workers keep using the local fake. No key
+is shipped with this submission; without one the command stops with a clear message.
+`--record` writes `tests/Fixtures/upstream/fansapi-live-{handle}.json` without the account's credit balance,
+and [`FansApiProfileUpstreamTest`](tests/Feature/Infrastructure/FansApiProfileUpstreamTest.php) then checks
+every recorded response maps to a valid snapshot. Offline, the same test runs against
+`fansapi-docs-example.json`: the shape of the documented example with illustrative values, not real data.
+
 ---
 
 ## 1. Run it
@@ -41,7 +63,7 @@ docker compose build
 docker compose run --rm app composer install
 docker compose run --rm app php artisan key:generate
 docker compose run --rm app php artisan migrate
-docker compose run --rm app php artisan test          # 89 tests, uses the separate fansapi_testing DB
+docker compose run --rm app php artisan test          # 96 tests, uses the separate fansapi_testing DB
 docker compose up -d horizon web                       # 4 Horizon workers + UI/fake upstream on :8000
 docker compose exec horizon php artisan refresh:workload --handler=legacy   # "before"
 docker compose exec horizon php artisan refresh:workload --handler=fixed    # "after"

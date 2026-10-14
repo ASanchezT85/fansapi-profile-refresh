@@ -45,4 +45,11 @@ return [
         'fake_enabled' => (bool) env('FAKE_UPSTREAM_ENABLED', false),
     ],
 
+    // Real provider (OnlyFans API by FansAPI), used only by `php artisan refresh:live`.
+    // Bring your own key; it is a secret: never commit or log it.
+    'fansapi' => [
+        'base_url' => env('FANSAPI_BASE_URL', 'https://app.onlyfansapi.com/api'),
+        'key' => env('FANSAPI_KEY', ''),
+    ],
+
 ];

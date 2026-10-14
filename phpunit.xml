@@ -29,6 +29,7 @@
         <env name="REDIS_CACHE_DB" value="15" force="true"/>
         <env name="FAKE_UPSTREAM_ENABLED" value="false" force="true"/>
         <env name="UPSTREAM_BASE_URL" value="https://upstream.test" force="true"/>
+        <env name="FANSAPI_KEY" value="" force="true"/>
         <env name="DB_URL" value="" force="true"/>
         <env name="MAIL_MAILER" value="array" force="true"/>
         <env name="QUEUE_CONNECTION" value="sync" force="true"/>

@@ -1,0 +1,32 @@
+{
+    "data": {
+        "id": 123,
+        "name": "Example Creator",
+        "username": "madison420ivy",
+        "about": "",
+        "isVerified": true,
+        "isPerformer": true,
+        "joinDate": "2025-01-01T01:01:01+00:00",
+        "lastSeen": "2025-01-01T01:01:01+00:00",
+        "postsCount": 2,
+        "photosCount": 0,
+        "videosCount": 0,
+        "mediasCount": 0,
+        "favoritesCount": 0,
+        "favoritedCount": 1234,
+        "subscribePrice": 0,
+        "subscribersCount": null
+    },
+    "_meta": {
+        "_cache": {
+            "is_cached": false,
+            "note": "Cache MISS. We had to make a new request to OnlyFans.com"
+        },
+        "_rate_limits": {
+            "limit_minute": 10000000,
+            "limit_day": 50000,
+            "remaining_minute": 9999999,
+            "remaining_day": 49993
+        }
+    }
+}

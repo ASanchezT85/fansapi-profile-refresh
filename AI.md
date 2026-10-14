@@ -13,7 +13,7 @@
 - Every claim in the README comes from a command that was actually run; raw outputs are in `docs/evidence/`.
 - The regression suite was run red against the legacy handler (13 failed, 6 passed) and committed before
   any fix; after the fix the same file, unchanged (`git diff` checked), passes.
-- Full suite: 89 tests, 302 assertions, against real Postgres and real Redis containers.
+- Full suite: 96 tests, 316 assertions, against real Postgres and real Redis containers.
 - PHPStan (Larastan) level 9 with no errors and no baseline; Pint clean.
 - The before/after workload ran against live Horizon workers, Redis and Postgres; every stored row was
   checked against the value the fake upstream served.
@@ -50,9 +50,14 @@
 
 ## What was NOT verified
 
-- **The real upstream.** No request was ever made to onlyfans.com or any real API. The response formats,
-  429/500 behaviour and per-account limits are the ones in the statement, reproduced by fixtures and a
-  local fake. Real headers, real Retry-After formats and real rate-limit windows were not observed.
+- **The real upstream.** onlyfans.com is never called. The incident's formats, 429/500 behaviour and
+  per-account limits are the ones in the statement, reproduced by fixtures and a local fake.
+- **The real provider adapter** (`FansApiProfileUpstream`, `refresh:live`) was written from the provider's
+  public documentation (endpoint, Bearer auth, example response) and tested against that documented shape.
+  The AI session did not make a live call: its permission system blocked sending the API key to an external
+  service, and I did not work around that. Whether `favoritedCount` is the right "likes" counter, and the
+  provider's real 429/Retry-After behaviour, are confirmed only by a live run with `--record`.
+  Live run by Alexander: _pending / result: …_
 - **Scale.** 4 workers, 40 profiles, one Docker host. Nothing here measures 50 M jobs/day; the scaling
   section is reasoning plus a list of what to measure.
 - **Crash variants**: a kill in the middle of the SQL statement, Redis restart/failover (losing reserved
